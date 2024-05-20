@@ -1,49 +1,65 @@
 public class GameOfLife {
-    private final int rows;
-    private final int cols;
-    private boolean[][] board;
+    private int size;
+    private int[][] grid;
+    private int[][] newGrid;
+    private int[] livingRules;
+    private int[] birthRules;
 
-    public GameOfLife(int rows, int cols) {
-        this.rows = rows;
-        this.cols = cols;
-        this.board = new boolean[rows][cols];
+    public GameOfLife(int size, String liveRules, String birthRules) {
+        this.size = size;
+        this.grid = new int[size][size];
+        this.newGrid = new int[size][size];
+        this.livingRules = new int[10];
+        this.birthRules = new int[10];
+
+        for (char c : liveRules.toCharArray()) {
+            int i = Character.getNumericValue(c);
+            this.livingRules[i] = 1;
+        }
+        for (char c : birthRules.toCharArray()) {
+            int i = Character.getNumericValue(c);
+            this.birthRules[i] = 1;
+        }
     }
 
-    public void setInitialState(boolean[][] initialState) {
-        this.board = initialState;
+    public void initializeRandom() {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                grid[i][j] = Math.random() < 0.5 ? 0 : 1;
+            }
+        }
     }
 
     public void nextGeneration() {
-        boolean[][] newBoard = new boolean[rows][cols];
-
-        for (int row = 0; row < rows; row++) {
-            for (int col = 0; col < cols; col++) {
-                int liveNeighbors = countLiveNeighbors(row, col);
-                if (board[row][col]) {
-                    newBoard[row][col] = liveNeighbors == 2 || liveNeighbors == 3;
+        for (int x = 0; x < size; x++) {
+            for (int y = 0; y < size; y++) {
+                int neighbours = countNeighbours(x, y);
+                if (grid[x][y] == 1) {
+                    newGrid[x][y] = livingRules[neighbours];
                 } else {
-                    newBoard[row][col] = liveNeighbors == 3;
+                    newGrid[x][y] = birthRules[neighbours];
                 }
             }
         }
-
-        board = newBoard;
+        for (int i = 0; i < size; i++) {
+            System.arraycopy(newGrid[i], 0, grid[i], 0, size);
+        }
     }
 
-    private int countLiveNeighbors(int row, int col) {
+    private int countNeighbours(int x, int y) {
         int count = 0;
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 if (i == 0 && j == 0) continue;
-                int newRow = (row + i + rows) % rows;
-                int newCol = (col + j + cols) % cols;
-                if (board[newRow][newCol]) count++;
+                int ni = (x + i + size) % size;
+                int nj = (y + j + size) % size;
+                count += grid[ni][nj];
             }
         }
         return count;
     }
 
-    public boolean[][] getBoard() {
-        return board;
+    public int[][] getGrid() {
+        return grid;
     }
 }
