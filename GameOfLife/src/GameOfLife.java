@@ -1,9 +1,9 @@
 public class GameOfLife {
-    private int size;
-    private int[][] grid;
-    private int[][] newGrid;
-    private int[] livingRules;
-    private int[] birthRules;
+    private final int size;
+    private final int[][] grid;
+    private final int[][] newGrid;
+    private final int[] livingRules;
+    private final int[] birthRules;
 
     public GameOfLife(int size, String liveRules, String birthRules) {
         this.size = size;
